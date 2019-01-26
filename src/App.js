@@ -1,27 +1,92 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import firebase from "./firebase.js"
 import './App.css';
 
+//VARIABLES START
+const provider = new firebase.auth.GithubAuthProvider();
+
+const auth = firebase.auth()
+
+//VARIABLES END
+
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+	//CONSTRUCTOR START
+	constructor() {
+		super();
+		this.state = {
+		}
+	}
+	//CONSTRUCTOR END
+
+	//FUNCTIONS START
+	logIn = () => {
+		auth.signInWithPopup(provider).then(result => {
+			// This gives you a GitHub Access Token. You can use it to access the GitHub API.
+			// const token = result.credential.accessToken;
+			
+			const userName = result.user.displayName.toLowerCase().split(" ").join("")
+			
+			this.setState({
+			user: result.user,
+			userName: userName
+			})
+			
+			console.log(userName, this.state.user.uid);
+   	});
+  	}
+	//FUNCTIONS END
+
+	//RENDER START
+	render() {
+		return (
+			<div className="App">
+				<header className="App-header">
+					<button className="logIn" onClick={this.logIn}>Login</button>
+
+					{
+						this.state.user 
+						? ( 
+							<div className="greeting">
+								<h2>Hello {this.state.userName}</h2>
+							</div>
+						) 
+						: (
+							<div className="greeting">
+								<h2>Please login</h2>
+							</div>
+						)
+					}		
+				</header>
+			</div>
+		);
+	}
+	//RENDER END
+
+	//COMPONENT DID MOUNT START
+	componentDidMount() {
+		auth.onAuthStateChanged(user => {
+			if (user) {
+				this.dbUser = firebase.database().ref(`/${user.uid}`);
+
+				this.dbUser.on("value", snapshot => {
+					this.setState({
+						dbUser: snapshot.val() || {}
+					})
+				})
+			} else {
+				this.setState({
+					user: null
+				})
+			}
+		})
+	}
+  //COMPONENT DID MOUNT END
+
+  //COMPONENT WILL UNMOUNT START
+  componentWillUnmount() {
+	  if (this.dbUser) {
+		  this.dbUser.off();
+	  }
   }
 }
 
