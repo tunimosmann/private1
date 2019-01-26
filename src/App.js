@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import firebase from "./firebase.js"
-import './App.css';
 
 //VARIABLES START
 const provider = new firebase.auth.GithubAuthProvider();
@@ -14,6 +13,9 @@ class App extends Component {
 	constructor() {
 		super();
 		this.state = {
+			user: null,
+			userName: null,
+			greetingName: null
 		}
 	}
 	//CONSTRUCTOR END
@@ -24,16 +26,27 @@ class App extends Component {
 			// This gives you a GitHub Access Token. You can use it to access the GitHub API.
 			// const token = result.credential.accessToken;
 			
-			const userName = result.user.displayName.toLowerCase().split(" ").join("")
+			const userName = result.user.displayName.toLowerCase().split(" ").join("");
+
+			const greetingName = result.user.displayName.split(" ")[0]
 			
 			this.setState({
 			user: result.user,
-			userName: userName
+			userName: userName,
+			greetingName: greetingName
 			})
-			
-			console.log(userName, this.state.user.uid);
    	});
-  	}
+	}
+	  
+	logOut = () => {
+		auth.signOut().then(() => {
+			this.setState({
+				user: null,
+				userName: null,
+				greetingName: null
+			})
+		})
+	}
 	//FUNCTIONS END
 
 	//RENDER START
@@ -41,13 +54,16 @@ class App extends Component {
 		return (
 			<div className="App">
 				<header className="App-header">
-					<button className="logIn" onClick={this.logIn}>Login</button>
+					<button className="logIn" onClick={this.logIn}>Log In</button>
+					<button className="logIn" onClick={this.logOut}>Log Out</button>
 
 					{
 						this.state.user 
 						? ( 
 							<div className="greeting">
-								<h2>Hello {this.state.userName}</h2>
+								<h2>Hello {this.state.greetingName}</h2>
+
+								
 							</div>
 						) 
 						: (
@@ -66,13 +82,21 @@ class App extends Component {
 	componentDidMount() {
 		auth.onAuthStateChanged(user => {
 			if (user) {
-				this.dbUser = firebase.database().ref(`/${user.uid}`);
+				this.setState({
+					user: user,
+				}, () => {
+					this.state.userName = this.state.user.displayName.toLowerCase().split(" ").join("");
 
-				this.dbUser.on("value", snapshot => {
-					this.setState({
-						dbUser: snapshot.val() || {}
-					})
-				})
+					this.state.greetingName = this.state.user.displayName.split(" ")[0]
+
+					this.dbUser = firebase.database().ref(`/${user.uid}`);
+
+					this.dbUser.on("value", snapshot => {
+						this.setState({
+							dbUser: snapshot.val() || {}
+						})
+					})	
+				})	
 			} else {
 				this.setState({
 					user: null
