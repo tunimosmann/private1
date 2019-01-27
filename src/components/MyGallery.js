@@ -9,6 +9,7 @@ class MyGallery extends Component {
 			imageURL: "",
 			imageFile: "",
 			fileName: "",
+			dbUserImages: []
 		}
 	}
 	//CONSTRUCTOR END
@@ -47,7 +48,7 @@ class MyGallery extends Component {
 		event.preventDefault();
 
 		//getting all stored images
-		const imageList = this.props.dbUserImages
+		const imageList = this.state.dbUserImages
 
 		//checking if user already updated that file
 		//return true if all stored images have a file name different than the file name that the user is trying to send
@@ -69,7 +70,7 @@ class MyGallery extends Component {
 			alert("Image added!");
 		} else { //if false (there's an image with that file name already)
 			//alert user
-			alert("You already uploaded this image!")
+			alert("You already uploaded this image or an image with the same name!")
 		};
 
 		//reset state
@@ -131,14 +132,14 @@ class MyGallery extends Component {
 
 					<div className="userGallery__items">
 						{
-						this.props.dbUserImages.length === 0
+						this.state.dbUserImages.length === 0
 						? (
 							<div className="userGallery__empty">
 								<p className="userGallery__text">You don't have any images yet.</p>
 							</div>			
 						) 
 						: (
-							this.props.dbUserImages.map((image) => {
+							this.state.dbUserImages.map((image) => {
 
 								return (
 
@@ -161,6 +162,26 @@ class MyGallery extends Component {
         )
 	}
 	//RENDER END
+
+	//COMPONENT DID MOUNT START
+	componentDidMount() {
+		this.dbUserImages = firebase.database().ref(`/${this.props.userName}/images`);
+
+		this.dbUserImages.on("value", snapshot => {
+			if (snapshot.val()) {
+				const imagesArray = Object.entries(snapshot.val())
+
+				this.setState({
+					dbUserImages: imagesArray
+				})
+			} else {
+				this.setState({
+					dbUserImages: []
+				})
+			}
+		})
+	}
+    //COMPONENT DID MOUNT END
 }
 
 export default MyGallery;

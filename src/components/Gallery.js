@@ -35,12 +35,12 @@ class Gallery extends Component {
                         <MyGallery 
                         userName={this.state.userName}
                         greetingName={this.state.greetingName}
-                        dbUserImages={this.state.dbUserImages}
                         />
                     ) 
                     : (
                         <UserGallery 
                         user={this.state.user}
+                        userName={this.state.userName}
                         dbUserImages={this.state.dbUserImages}
                         activePage={activePage}
                         />
@@ -58,26 +58,25 @@ class Gallery extends Component {
                 this.setState({
                     user: user,
                 }, () => {
-                    const userName = user.displayName.toLowerCase().split(" ").join("");
+                    if (user.displayName) {
+                        const userName = user.displayName.toLowerCase().split(" ").join("");
+                        const greetingName = user.displayName.split(" ")[0]
 
-                    const greetingName = user.displayName.split(" ")[0]
-
-                    this.setState({
-                        userName: userName,
-                        greetingName: greetingName
-                    })
-
-                    //USER INFO
-                    this.dbUser = firebase.database().ref(`/${user.uid}`);
-
-                    this.dbUser.on("value", snapshot => {
                         this.setState({
-                            dbUser: snapshot.val() || {}
+                            userName: userName,
+                            greetingName: greetingName
                         })
-                    })
+                    } else {
+                        const emailUser = user.email.toLowerCase().split("@")[0];
+
+                        this.setState({
+                            userName: emailUser,
+                            greetingName: emailUser
+                        })
+                    }	
 
                     //USER IMAGES
-                    this.dbUserImages = firebase.database().ref(`/${userName}/images`);
+                    this.dbUserImages = firebase.database().ref(`/${this.state.userName}/images`);
 
                     this.dbUserImages.on("value", snapshot => {
                         if (snapshot.val()) {
@@ -104,9 +103,6 @@ class Gallery extends Component {
 
     //COMPONENT WILL UNMOUNT START
     componentWillUnmount() {
-        if (this.dbUser) {
-            this.dbUser.off();
-        }
         if (this.dbUserImages) {
             this.dbUserImages.off();
         }

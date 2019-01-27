@@ -19,12 +19,6 @@ class App extends Component {
 		this.state = {
 			user: null,
 			userName: null,
-			// greetingName: null,
-			// imageURL: "",
-			// imageFile: "",
-			// fileName: "",
-			dbUser: {},
-			dbUserImages: []
 		}
 	}
 	//CONSTRUCTOR END
@@ -33,21 +27,25 @@ class App extends Component {
 	logIn = () => {
 		//login with GitHub
 		auth.signInWithPopup(provider).then(result => {
-			// This gives you a GitHub Access Token. You can use it to access the GitHub API.
-			// const token = result.credential.accessToken;
-			
-			//creating an username
-			const userName = result.user.displayName.toLowerCase().split(" ").join("");
-
-			//getting user's first name
-			// const greetingName = result.user.displayName.split(" ")[0]
-			
 			//updating state
 			this.setState({
 				user: result.user,
-				userName: userName,
-				// greetingName: greetingName
 			})
+			
+			//creating an username
+			if (result.user.displayName) {
+				const userName = result.user.displayName.toLowerCase().split(" ").join("");
+
+				this.setState({
+					userName: userName
+				})
+			} else {
+				const emailUser = result.user.email.toLowerCase().split("@")[0];
+
+				this.setState({
+					userName: emailUser
+				})
+			}	
 
 			//redirecting to user's page
 			window.location.href = `/${this.state.userName}`;
@@ -60,73 +58,12 @@ class App extends Component {
 			this.setState({
 				user: null,
 				userName: null,
-				// greetingName: null
 			})
 
 			//redirecting to home
 			window.location.href = "/";
 		})
 	}
-
-	// //selecting a file
-	// handleFileSelection = event => {
-	// 	//the selected file
-	// 	const selectedImage = event.target.files[0];
-
-	// 	//the name of the file
-	// 	const fileName = event.target.files[0].name;
-
-	// 	//transforming the file into data url
-	// 	let readImage = new FileReader();
-
-	// 	readImage.readAsDataURL(selectedImage);
-
-	// 	//updating state with the result
-	// 	readImage.onload = () => {
-	// 		this.setState({
-	// 			imageURL: readImage.result
-	// 		})
-	// 	}
-
-	// 	//updating state with the image file and name
-	// 	this.setState({
-	// 		imageFile: selectedImage,
-	// 		fileName: fileName
-	// 	})
-	// }
-
-	// //sending the image
-	// handleFileSubmition = event => {
-	// 	event.preventDefault();
-
-	// 	//getting all stored images
-	// 	const imageList = this.state.dbUserImages
-
-	// 	//checking if user already updated that file
-	// 	//return true if all stored images have a file name different than the file name that the user is trying to send
-	// 	const checkImage = imageList.every(image => image[1].name !== this.state.fileName);
-
-	// 	//if true (all stored images have a different file name)
-	// 	if (checkImage) {
-	// 		//store new values and push to firebase
-	// 		const newImage = {
-	// 			url: this.state.imageURL,
-	// 			name: this.state.fileName
-	// 		};
-
-	// 		this.dbUserImages.push(newImage);
-	// 	} else { //if false (there's an image with that file name already)
-	// 		//alert user
-	// 		alert("You already uploaded this image!")
-	// 	};
-
-	// 	//reset state
-	// 	this.setState({
-	// 		imageURL: "",
-	// 		imageFile: "",
-	// 		fileName: "",
-	// 	});
-	// }
 	//FUNCTIONS END
 
 	//RENDER START
@@ -171,41 +108,19 @@ class App extends Component {
 				this.setState({
 					user: user,
 				}, () => {
-					const userName = user.displayName.toLowerCase().split(" ").join("");
+					if (user.displayName) {
+						const userName = user.displayName.toLowerCase().split(" ").join("");
 
-					// const greetingName = user.displayName.split(" ")[0]
+						this.setState({
+							userName: userName
+						})
+					} else {
+						const emailUser = user.email.toLowerCase().split("@")[0];
 
-					this.setState({
-						userName: userName,
-						// greetingName: greetingName 
-					})
-
-					//USER INFO
-					// this.dbUser = firebase.database().ref(`/${user.uid}`);
-
-					// this.dbUser.on("value", snapshot => {
-					// 	this.setState({
-					// 		dbUser: snapshot.val() || {}
-					// 	})
-					// })
-
-					//USER IMAGES
-					// this.dbUserImages = firebase.database().ref(`/${userName}/images`); 
-
-					// this.dbUserImages.on("value", snapshot => {
-					// 	if (snapshot.val()) {
-
-					// 		const imagesArray = Object.entries(snapshot.val())
-
-					// 		this.setState({
-					// 			dbUserImages: imagesArray
-					// 		})
-					// 	} else {
-					// 		this.setState({
-					// 			dbUserImages: []
-					// 		})
-					// 	}
-					// })	
+						this.setState({
+							userName: emailUser
+						})
+					}	
 				})	
 			} else {
 				this.setState({
@@ -217,14 +132,14 @@ class App extends Component {
   //COMPONENT DID MOUNT END
 
   //COMPONENT WILL UNMOUNT START
-  componentWillUnmount() {
-		if (this.dbUser) {
-			this.dbUser.off();
-		}
-		if (this.dbUserImages) {
-			this.dbUserImages.off();
-		}
-	}
+//   componentWillUnmount() {
+// 		if (this.dbUser) {
+// 			this.dbUser.off();
+// 		}
+// 		if (this.dbUserImages) {
+// 			this.dbUserImages.off();
+// 		}
+// 	}
 }
 
 export default App;
