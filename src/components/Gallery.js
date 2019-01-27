@@ -58,8 +58,11 @@ class Gallery extends Component {
                 this.setState({
                     user: user,
                 }, () => {
+                    const userName = user.email.toLowerCase().split("@")[0];
+
                     if (user.displayName) {
-                        const userName = user.displayName.toLowerCase().split(" ").join("");
+                        
+                        // const userName = user.displayName.toLowerCase().split(" ").join("");
                         const greetingName = user.displayName.split(" ")[0]
 
                         this.setState({
@@ -67,13 +70,11 @@ class Gallery extends Component {
                             greetingName: greetingName
                         })
                     } else {
-                        const emailUser = user.email.toLowerCase().split("@")[0];
-
                         this.setState({
-                            userName: emailUser,
-                            greetingName: emailUser
+                            userName: userName,
+                            greetingName: userName
                         })
-                    }	
+                    };	
 
                     //USER IMAGES
                     this.dbUserImages = firebase.database().ref(`/${this.state.userName}/images`);

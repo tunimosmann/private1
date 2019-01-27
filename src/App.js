@@ -33,19 +33,21 @@ class App extends Component {
 			})
 			
 			//creating an username
-			if (result.user.displayName) {
-				const userName = result.user.displayName.toLowerCase().split(" ").join("");
+			const userName = result.user.email.toLowerCase().split("@")[0];
 
-				this.setState({
-					userName: userName
-				})
-			} else {
-				const emailUser = result.user.email.toLowerCase().split("@")[0];
+			this.setState({
+				userName: userName
+			})
 
-				this.setState({
-					userName: emailUser
-				})
-			}	
+			// if (result.user.displayName) {
+				
+			// } else {
+			// 	const emailUser = 
+
+			// 	this.setState({
+			// 		userName: emailUser
+			// 	})
+			// }	
 
 			//redirecting to user's page
 			window.location.href = `/${this.state.userName}`;
@@ -86,7 +88,7 @@ class App extends Component {
 
 										<p className="home__text">Please login if you want to save images to your gallery.</p>
 
-										<p className="home__text">You can check other people's galleries by visiting https://tread-a683d.firebaseio.com/firstnamelastname</p>
+										<p className="home__text">You can check other people's galleries by visiting https://tread-a683d.firebaseio.com/username</p>
 									</div>
 								)
 								: (
@@ -108,19 +110,25 @@ class App extends Component {
 				this.setState({
 					user: user,
 				}, () => {
-					if (user.displayName) {
-						const userName = user.displayName.toLowerCase().split(" ").join("");
+					const userName = user.email.toLowerCase().split("@")[0];
 
-						this.setState({
-							userName: userName
-						})
-					} else {
-						const emailUser = user.email.toLowerCase().split("@")[0];
+					this.setState({
+						userName: userName
+					})
 
-						this.setState({
-							userName: emailUser
-						})
-					}	
+					// if (user.displayName) {
+					// 	const userName = user.displayName.toLowerCase().split(" ").join("");
+
+					// 	this.setState({
+					// 		userName: userName
+					// 	})
+					// } else {
+					// 	const emailUser = user.email.toLowerCase().split("@")[0];
+
+					// 	this.setState({
+					// 		userName: emailUser
+					// 	})
+					// }	
 				})	
 			} else {
 				this.setState({
