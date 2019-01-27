@@ -164,6 +164,7 @@ class App extends Component {
 						</section>
 
 						<Gallery 
+						userName={this.state.userName}
 						greetingName={this.state.greetingName}
 						dbUserImages={this.state.dbUserImages}
 						/>
