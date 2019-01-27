@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import firebase from "./firebase.js"
+import firebase from "./firebase.js";
+import Gallery from "./components/Gallery.js";
+import "./App.css";
 // import { read } from 'fs';
 
 //VARIABLES START
 const provider = new firebase.auth.GithubAuthProvider();
 const auth = firebase.auth();
-// const storage = firebase.database().ref();
-
 //VARIABLES END
 
 class App extends Component {
@@ -21,24 +21,29 @@ class App extends Component {
 			imageFile: "",
 			fileName: "",
 			dbUser: {},
+			dbUserImages: []
 		}
 	}
 	//CONSTRUCTOR END
 
 	//FUNCTIONS START
 	logIn = () => {
+		//login with GitHub
 		auth.signInWithPopup(provider).then(result => {
 			// This gives you a GitHub Access Token. You can use it to access the GitHub API.
 			// const token = result.credential.accessToken;
 			
+			//creating an username
 			const userName = result.user.displayName.toLowerCase().split(" ").join("");
 
+			//getting user's first name
 			const greetingName = result.user.displayName.split(" ")[0]
 			
+			//updating state
 			this.setState({
-			user: result.user,
-			userName: userName,
-			greetingName: greetingName
+				user: result.user,
+				userName: userName,
+				greetingName: greetingName
 			})
    	});
 	}
@@ -53,10 +58,12 @@ class App extends Component {
 		})
 	}
 
+	//selecting a file
 	handleFileSelection = event => {
 		//the selected file
 		const selectedImage = event.target.files[0];
 
+		//the name of the file
 		const fileName = event.target.files[0].name;
 
 		//transforming the file into data url
@@ -78,31 +85,38 @@ class App extends Component {
 		})
 	}
 
+	//sending the image
 	handleFileSubmition = event => {
 		event.preventDefault();
 
+		//getting all stored images
 		const imageList = this.state.dbUserImages
 
+		//checking if user already updated that file
+		//return true if all stored images have a file name different than the file name that the user is trying to send
 		const checkImage = imageList.every(image => image[1].name !== this.state.fileName);
 
+		//if true (all stored images have a different file name)
 		if (checkImage) {
+			//store new values and push to firebase
 			const newImage = {
 				url: this.state.imageURL,
 				name: this.state.fileName
 			};
 
 			this.dbUserImages.push(newImage);
-		} else {
+		} else { //if false (there's an image with that file name already)
+			//alert user
 			alert("You already uploaded this image!")
 		};
 
+		//reset state
 		this.setState({
 			imageURL: "",
 			imageFile: "",
 			fileName: "",
 		});
 	}
-
 	//FUNCTIONS END
 
 	//RENDER START
@@ -112,26 +126,49 @@ class App extends Component {
 				<header className="App-header">
 					<button className="logIn" onClick={this.logIn}>Log In</button>
 					<button className="logIn" onClick={this.logOut}>Log Out</button>
-
-					{
-						this.state.user 
-						? ( 
-							<div className="greeting">
-									<h2>Hello {this.state.greetingName}</h2>
-
-									<label htmlFor="uploadImage">Upload an Image</label>
-									<input type="file" id="uploadImage" accept="image/*" onChange={this.handleFileSelection}/>
-
-									<input type="submit" value="Upload Image" onClick={this.handleFileSubmition}/>
-							</div>
-						) 
-						: (
-							<div className="greeting">
-								<h2>Please login</h2>
-							</div>
-						)
-					}		
 				</header>
+
+				<body className="body">
+					<main className="main">
+						<section className="userPanel">
+							{
+								this.state.user
+								? (
+									<div className="userPanel__wrapper">
+										<h2 className="userPanel__h2 heading__h2">Hello {this.state.greetingName}</h2>
+
+										<form action="" className="userPanel__form form" onSubmit={this.handleFileSubmition}>
+											<label htmlFor="uploadImage" className="form__label">Upload an Image</label>
+											<input
+											type="file"
+											className="form__file"
+											id="uploadImage"
+											accept="image/*"
+											onChange={this.handleFileSelection}
+											/>
+
+											<input
+											type="submit"
+											className="form__submit"
+											value="Upload Image"
+											/>
+										</form>
+									</div>
+								)
+								: (
+									<div className="userPanel__wrapper">
+										<h2>Please login</h2>
+									</div>
+								)
+							}		
+						</section>
+
+						<Gallery 
+						greetingName={this.state.greetingName}
+						dbUserImages={this.state.dbUserImages}
+						/>
+					</main>
+				</body>
 			</div>
 		);
 	}
@@ -193,6 +230,9 @@ class App extends Component {
   componentWillUnmount() {
 	  if (this.dbUser) {
 		  this.dbUser.off();
+	  }
+	  if (this.dbUserImages) {
+		  this.dbUserImages.off();
 	  }
   }
 }
