@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import firebase from "./firebase.js"
+// import { read } from 'fs';
 
 //VARIABLES START
 const provider = new firebase.auth.GithubAuthProvider();
-
-const auth = firebase.auth()
+const auth = firebase.auth();
+// const storage = firebase.database().ref();
 
 //VARIABLES END
 
@@ -15,7 +16,11 @@ class App extends Component {
 		this.state = {
 			user: null,
 			userName: null,
-			greetingName: null
+			greetingName: null,
+			imageURL: "",
+			imageFile: "",
+			fileName: "",
+			dbUser: {},
 		}
 	}
 	//CONSTRUCTOR END
@@ -47,6 +52,57 @@ class App extends Component {
 			})
 		})
 	}
+
+	handleFileSelection = event => {
+		//the selected file
+		const selectedImage = event.target.files[0];
+
+		const fileName = event.target.files[0].name;
+
+		//transforming the file into data url
+		let readImage = new FileReader();
+
+		readImage.readAsDataURL(selectedImage);
+
+		//updating state with the result
+		readImage.onload = () => {
+			this.setState({
+				imageURL: readImage.result
+			})
+		}
+
+		//updating state with the image file and name
+		this.setState({
+			imageFile: selectedImage,
+			fileName: fileName
+		})
+	}
+
+	handleFileSubmition = event => {
+		event.preventDefault();
+
+		const imageList = this.state.dbUserImages
+
+		const checkImage = imageList.every(image => image[1].name !== this.state.fileName);
+
+		if (checkImage) {
+			const newImage = {
+				url: this.state.imageURL,
+				name: this.state.fileName
+			};
+
+			this.dbUserImages.push(newImage);
+		} else {
+			alert("You already uploaded this image!")
+		};
+
+		this.setState({
+			imageURL: "",
+			imageFile: "",
+			fileName: "",
+		});
+	}
+
 	//FUNCTIONS END
 
 	//RENDER START
@@ -61,9 +117,12 @@ class App extends Component {
 						this.state.user 
 						? ( 
 							<div className="greeting">
-								<h2>Hello {this.state.greetingName}</h2>
+									<h2>Hello {this.state.greetingName}</h2>
 
-								
+									<label htmlFor="uploadImage">Upload an Image</label>
+									<input type="file" id="uploadImage" accept="image/*" onChange={this.handleFileSelection}/>
+
+									<input type="submit" value="Upload Image" onClick={this.handleFileSubmition}/>
 							</div>
 						) 
 						: (
@@ -85,16 +144,40 @@ class App extends Component {
 				this.setState({
 					user: user,
 				}, () => {
-					this.state.userName = this.state.user.displayName.toLowerCase().split(" ").join("");
+					const userName = user.displayName.toLowerCase().split(" ").join("");
 
-					this.state.greetingName = this.state.user.displayName.split(" ")[0]
+					const greetingName = user.displayName.split(" ")[0]
 
+					this.setState({
+						userName: userName,
+						greetingName: greetingName 
+					})
+
+					//USER INFO
 					this.dbUser = firebase.database().ref(`/${user.uid}`);
 
 					this.dbUser.on("value", snapshot => {
 						this.setState({
 							dbUser: snapshot.val() || {}
 						})
+					})
+
+					//USER IMAGES
+					this.dbUserImages = firebase.database().ref(`/${userName}/images`); 
+
+					this.dbUserImages.on("value", snapshot => {
+						if (snapshot.val()) {
+
+							const imagesArray = Object.entries(snapshot.val())
+
+							this.setState({
+								dbUserImages: imagesArray
+							})
+						} else {
+							this.setState({
+								dbUserImages: []
+							})
+						}
 					})	
 				})	
 			} else {
