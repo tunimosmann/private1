@@ -19,7 +19,7 @@ class Gallery extends Component {
             imageURL: "",
             imageFile: "",
             fileName: "",
-            dbUser: {},
+            generatedLink: "",
             dbUserImages: []
         }
     }
@@ -29,7 +29,13 @@ class Gallery extends Component {
     copyLink = (event) => {
         event.preventDefault();
 
-        console.log(event.target.id);
+        const imageName = event.target.id;
+
+        const imagePath = `https://tread-a683d.firebaseio.com/${this.state.userName}/${imageName}`;
+
+        this.setState({
+            generatedLink: imagePath
+        })
     }
     //FUNCTIONS END
 
@@ -44,6 +50,7 @@ class Gallery extends Component {
                         userName={this.state.userName}
                         greetingName={this.state.greetingName}
                         copyLink={this.copyLink}
+                        generatedLink={this.state.generatedLink}
                         />
                     ) 
                     : (
@@ -53,6 +60,7 @@ class Gallery extends Component {
                         dbUserImages={this.state.dbUserImages}
                         activePage={activePage}
                         copyLink={this.copyLink}
+                        generatedLink={this.state.generatedLink}
                         />
                     )
                 }
