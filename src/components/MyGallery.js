@@ -9,6 +9,7 @@ class MyGallery extends Component {
 			imageURL: "",
 			imageFile: "",
 			fileName: "",
+			imageLink: "",
 			dbUserImages: []
 		}
 	}
@@ -81,6 +82,61 @@ class MyGallery extends Component {
 		});
 	}
 
+	//selecting a link
+	handleLinkSelection = event => {
+		this.setState({
+			[event.target.id]: event.target.value
+		})
+	}
+
+	//sending the link
+	handleLinkSubmition = event => {
+		event.preventDefault();
+
+		const link = this.state.imageLink;
+
+		//checking if the input is not empty
+		if (link.trim() === "") {
+			alert("Please provide a link to an image");
+		} else if (link.search("http") === -1) { //checking if the user typed the link with or without http
+			alert("Plese provide a link with http or https");
+		} else {
+			//giving a name to the image
+			const newImageName = prompt("Give this image an unique name");
+
+			//getting all stored images
+			const imageList = this.state.dbUserImages
+
+			//checking if user already updated that file
+			//return true if all stored images have a file name different than the new image name
+			const checkImage = imageList.every(image => image[1].name !== newImageName);
+
+			//if true (all stored images have a different file name)
+			if (checkImage) {
+				//store new values and push to firebase
+				const newImage = {
+					url: this.state.imageLink,
+					name: newImageName
+				};
+
+				//the path to user images
+				const imagesPath = firebase.database().ref(`/${this.props.userName}/images`);
+
+				imagesPath.push(newImage);
+
+				alert("Image added!");
+			} else { //if false (there's an image with that file name already)
+				//alert user
+				alert("You already uploaded this image or an image with the same name!")
+			};
+
+			//reset state
+			this.setState({
+				imageLink: ""
+			});
+		}
+	}
+
 	//deleting an image
 	deleteImage = (event) => {
 		event.preventDefault();
@@ -106,13 +162,30 @@ class MyGallery extends Component {
 					<h2 className="userGallery__h2 heading__h2">Hello {this.props.greetingName}</h2>
 
 					<form action="" className="userGallery__form form" onSubmit={this.handleFileSubmition}>
-						<label htmlFor="uploadImage" className="form__label">Upload an Image</label>
+						<label htmlFor="imageFile" className="form__label">Upload an image from your computer:</label>
 						<input
 							type="file"
-							className="form__file"
-							id="uploadImage"
+							className="form__entry"
+							id="imageFile"
 							accept="image/*"
 							onChange={this.handleFileSelection}
+						/>
+
+						<input
+							type="submit"
+							className="form__submit"
+							value="Upload Image"
+						/>
+					</form>
+
+					<form action="" className="userGallery__form form" onSubmit={this.handleLinkSubmition}>
+						<label htmlFor="imageLink" className="form__label">Upload using an image link:</label>
+						<input
+							type="input"
+							className="form__entry"
+							id="imageLink"
+							onChange={this.handleLinkSelection}
+							value={this.state.imageLink}
 						/>
 
 						<input

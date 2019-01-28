@@ -73,10 +73,12 @@ class App extends Component {
 		return (
 			<Router>
 				<div className="App">
-					<header className="App-header">
-						<button className="logIn" onClick={this.logIn}>Log In</button>
-						<button className="logIn" onClick={this.logOut}>Log Out</button>
+					<header className="header">
+						<button className="header__button" onClick={this.logIn}>Log In</button>
+						<button className="header__button" onClick={this.logOut}>Log Out</button>
 					</header>
+
+
 
 					<main className="main">
 						<section className="home">

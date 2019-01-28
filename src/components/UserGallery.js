@@ -56,9 +56,9 @@ class UserGallery extends Component {
     render() {
         return (
             <div className="userGallery__wrapper">
-
-
                 <div className="userGallery__gallery">
+                    <a href={`http://localhost:3000/${this.props.userName}`} className="userGallery__link">Back to Your Gallery</a>
+
                     <h2 className="userGallery__h2 heading__h2">{this.props.activePage}'s Gallery</h2>
 
                     <div className="userGallery__items">
