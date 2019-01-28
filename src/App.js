@@ -39,16 +39,6 @@ class App extends Component {
 				userName: userName
 			})
 
-			// if (result.user.displayName) {
-				
-			// } else {
-			// 	const emailUser = 
-
-			// 	this.setState({
-			// 		userName: emailUser
-			// 	})
-			// }	
-
 			//redirecting to user's page
 			window.location.href = `/${this.state.userName}`;
    		});
@@ -130,10 +120,10 @@ class App extends Component {
 			}
 		})
 	}
-  //COMPONENT DID MOUNT END
+	//COMPONENT DID MOUNT END
 
-  //COMPONENT WILL UNMOUNT START
-  componentWillUnmount() {
+	//COMPONENT WILL UNMOUNT START
+	componentWillUnmount() {
 		if (this.dbUserImages) {
 			this.dbUserImages.off();
 		}

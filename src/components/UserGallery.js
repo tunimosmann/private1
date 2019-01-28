@@ -10,7 +10,8 @@ class UserGallery extends Component {
     constructor() {
         super();
         this.state = {
-            activeGallery: []
+            activeGallery: [],
+            dbUserImages: []
         }
     }
 
@@ -25,14 +26,15 @@ class UserGallery extends Component {
         const newImageName = prompt("Give this image an unique name");
 
         //getting all stored images
-        const imageList = this.props.dbUserImages
+        const imageList = this.state.dbUserImages
 
-        //checking if user already updated an image with that name
+        //checking if user already updated an image with that name or URL
         //return true if all stored images have a file name different than the new image name
         const checkImage = imageList.every(image => image[1].name !== newImageName);
-
+        //return true if all stored images have an URL different than the new image URL
+        const checkURL = imageList.every(image => image[1].url !== newImageURL);
         //if true (all stored images have a different file name)
-        if (checkImage) {
+        if (checkImage && checkURL) {
             //store new values and push to firebase
             const newImage = {
                 url: newImageURL,
@@ -57,8 +59,16 @@ class UserGallery extends Component {
         return (
             <div className="userGallery__wrapper">
                 <div className="userGallery__gallery">
-                    <a href={`http://localhost:3000/${this.props.userName}`} className="userGallery__link">Back to Your Gallery</a>
-
+                    {
+                        this.props.user
+                        ? (
+                            <a href={`http://localhost:3000/${this.props.userName}`} className="userGallery__link">Back to Your Gallery</a>
+                        )
+                        : (
+                            <div className="empty"></div>  
+                        )
+                    }
+                    
                     <h2 className="userGallery__h2 heading__h2">{this.props.activePage}'s Gallery</h2>
 
                     <div className="userGallery__items">
@@ -121,9 +131,10 @@ class UserGallery extends Component {
     //COMPONENT DID MOUNT START
     componentDidMount() {
         this.activeGallery = firebase.database().ref(`/${activePage}/images`);
-
+        
         this.activeGallery.on("value", snapshot => {
             if (snapshot.val()) {
+
                 const imagesArray = Object.entries(snapshot.val())
 
                 this.setState({
@@ -134,7 +145,7 @@ class UserGallery extends Component {
                     activeGallery: []
                 })
             }
-        })
+        });
     }
     //COMPONENT DID MOUNT END
 
@@ -142,7 +153,7 @@ class UserGallery extends Component {
     componentWillUnmount() {
         if (this.activeGallery) {
             this.activeGallery.off();
-        }
+        };
     }
 	//COMPONENT WILL UNMOUNT END
 }

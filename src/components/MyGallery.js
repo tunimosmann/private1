@@ -56,7 +56,7 @@ class MyGallery extends Component {
 
 			//checking if user already updated that file
 			//return true if all stored images have a file name different than the file name that the user is trying to send
-			const checkImage = imageList.every(image => image[1].name !== this.state.fileName);
+			const checkImage = imageList.every(image => image[1].name !== file);
 
 			//if true (all stored images have a different file name)
 			if (checkImage) {
@@ -74,17 +74,17 @@ class MyGallery extends Component {
 				alert("Image added!");
 
 				document.getElementById("imageFile").value = "";
+
+				//reset state
+				this.setState({
+					imageURL: "",
+					imageFile: "",
+					fileName: "",
+				});
 			} else { //if false (there's an image with that file name already)
 				//alert user
 				alert("You already uploaded this image or an image with the same name!")
 			};
-
-			//reset state
-			this.setState({
-				imageURL: "",
-				imageFile: "",
-				fileName: "",
-			});
 		} else {
 			alert("Please select an image file.")
 		}
@@ -118,12 +118,14 @@ class MyGallery extends Component {
 			//checking if user already updated that file
 			//return true if all stored images have a file name different than the new image name
 			const checkImage = imageList.every(image => image[1].name !== newImageName);
+			//return true if all stored images have an URL different than the new image URL
+			const checkLink = imageList.every(image => image[1].url !== link);
 
 			//if true (all stored images have a different file name)
-			if (checkImage) {
+			if (checkImage && checkLink) {
 				//store new values and push to firebase
 				const newImage = {
-					url: this.state.imageLink,
+					url: link,
 					name: newImageName
 				};
 
@@ -133,15 +135,15 @@ class MyGallery extends Component {
 				imagesPath.push(newImage);
 
 				alert("Image added!");
+
+				//reset state
+				this.setState({
+					imageLink: ""
+				});
 			} else { //if false (there's an image with that file name already)
 				//alert user
 				alert("You already uploaded this image or an image with the same name!")
 			};
-
-			//reset state
-			this.setState({
-				imageLink: ""
-			});
 		}
 	}
 
@@ -280,7 +282,6 @@ class MyGallery extends Component {
 	}
 	//COMPONENT DID MOUNT END
 	
-
 	//COMPONENT WILL UNMOUNT START
 	componentWillUnmount() {
 		if (this.dbUserImages) {
