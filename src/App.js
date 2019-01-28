@@ -74,11 +74,16 @@ class App extends Component {
 			<Router>
 				<div className="App">
 					<header className="header">
-						<button className="header__button" onClick={this.logIn}>Log In</button>
-						<button className="header__button" onClick={this.logOut}>Log Out</button>
+						{
+							this.state.user
+							? (
+								<button className="header__button" onClick={this.logOut}>Log Out</button>
+							)
+							: (
+								<button className="header__button" onClick={this.logIn}>Log In</button>
+							)
+						}	
 					</header>
-
-
 
 					<main className="main">
 						<section className="home">

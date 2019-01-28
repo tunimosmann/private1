@@ -26,7 +26,7 @@ class Gallery extends Component {
     //CONSTRUCTOR END
     
     //FUNCTIONS START
-    copyLink = (event) => {
+    generateLink = (event) => {
         event.preventDefault();
 
         const imageName = event.target.id;
@@ -37,6 +37,7 @@ class Gallery extends Component {
             generatedLink: imagePath
         })
     }
+
     //FUNCTIONS END
 
     //RENDER START
@@ -49,7 +50,7 @@ class Gallery extends Component {
                         <MyGallery 
                         userName={this.state.userName}
                         greetingName={this.state.greetingName}
-                        copyLink={this.copyLink}
+                        generateLink={this.generateLink}
                         generatedLink={this.state.generatedLink}
                         />
                     ) 
@@ -59,11 +60,13 @@ class Gallery extends Component {
                         userName={this.state.userName}
                         dbUserImages={this.state.dbUserImages}
                         activePage={activePage}
-                        copyLink={this.copyLink}
+                        generateLink={this.generateLink}
                         generatedLink={this.state.generatedLink}
                         />
                     )
                 }
+
+                {/* <Route path="/:userName" component={Gallery} /> */}
             </section>
         )
     }

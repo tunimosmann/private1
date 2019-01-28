@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 import firebase from "../firebase.js";
 
-// VARIABLES START
-
-
-
-			
-//VARIBLES END
-
 class MyGallery extends Component {
 	//CONSTRUCTOR START
 	constructor() {
@@ -30,7 +23,7 @@ class MyGallery extends Component {
 		const selectedImage = event.target.files[0];
 
 		//the name of the file
-		const fileName = event.target.files[0].name;
+		const fileName = event.target.files[0].name.split(".")[0];
 
 		//transforming the file into data url
 		let readImage = new FileReader();
@@ -48,45 +41,53 @@ class MyGallery extends Component {
 		this.setState({
 			imageFile: selectedImage,
 			fileName: fileName
-		})
+		})		
 	}
 
 	//sending the image
 	handleFileSubmition = event => {
 		event.preventDefault();
 
-		//getting all stored images
-		const imageList = this.state.dbUserImages
+		const file = this.state.fileName;
 
-		//checking if user already updated that file
-		//return true if all stored images have a file name different than the file name that the user is trying to send
-		const checkImage = imageList.every(image => image[1].name !== this.state.fileName);
+		if (file.trim() !== "") {
+			//getting all stored images
+			const imageList = this.state.dbUserImages
 
-		//if true (all stored images have a different file name)
-		if (checkImage) {
-			//store new values and push to firebase
-			const newImage = {
-				url: this.state.imageURL,
-				name: this.state.fileName
+			//checking if user already updated that file
+			//return true if all stored images have a file name different than the file name that the user is trying to send
+			const checkImage = imageList.every(image => image[1].name !== this.state.fileName);
+
+			//if true (all stored images have a different file name)
+			if (checkImage) {
+				//store new values and push to firebase
+				const newImage = {
+					url: this.state.imageURL,
+					name: this.state.fileName
+				};
+
+				//the path to user images
+				const imagesPath = firebase.database().ref(`/${this.props.userName}/images`);
+
+				imagesPath.push(newImage);
+
+				alert("Image added!");
+
+				document.getElementById("imageFile").value = "";
+			} else { //if false (there's an image with that file name already)
+				//alert user
+				alert("You already uploaded this image or an image with the same name!")
 			};
 
-			//the path to user images
-			const imagesPath = firebase.database().ref(`/${this.props.userName}/images`);
-
-			imagesPath.push(newImage);
-
-			alert("Image added!");
-		} else { //if false (there's an image with that file name already)
-			//alert user
-			alert("You already uploaded this image or an image with the same name!")
-		};
-
-		//reset state
-		this.setState({
-			imageURL: "",
-			imageFile: "",
-			fileName: "",
-		});
+			//reset state
+			this.setState({
+				imageURL: "",
+				imageFile: "",
+				fileName: "",
+			});
+		} else {
+			alert("Please select an image file.")
+		}
 	}
 
 	//selecting a link
@@ -163,7 +164,6 @@ class MyGallery extends Component {
 
 	//RENDER START
     render() {
-		console.log(this.props.generatedLink.split("/").reverse()[0]);
         return (
             <div className="userGallery__wrapper">
 				<div className="userGallery__panel">
@@ -220,27 +220,27 @@ class MyGallery extends Component {
 							</div>			
 						) 
 						: (
-							this.state.dbUserImages.map((image) => {
+							this.state.dbUserImages.map((image, i) => {
 
-								const imageName = image[1].name.split(".")[0];
+								const imageName = image[1].name;
 
-								const nameTurnedPath = image[1].name.split(".")[0].split(" ").join("").toLowerCase()
+								const nameTurnedPath = image[1].name.split(" ").join("").toLowerCase()
 
 								return (
 
-									<div className="userGallery__item">
+									<div className="userGallery__item" key={i}>
 										<div className="userGallery__imageContainer">
 											<img src={image[1].url} alt={imageName} className="userGallery__image" />
 										</div>
 
 										<h3 className="userGallery__title">{imageName}</h3>
 
-										<button className="userGallery__button" onClick={this.props.copyLink} id={nameTurnedPath}>Generate Link</button>
+										<button className="userGallery__button" onClick={this.props.generateLink} id={nameTurnedPath}>Generate Link</button>
 
 										{
 											this.props.generatedLink.split("/").reverse()[0] === nameTurnedPath
 											? (
-												<a className="userGallery__text">{this.props.generatedLink}</a>
+											<p className="userGallery__text">{this.props.generatedLink}</p>
 											)
 											: (
 												<div className="empty"></div>
@@ -278,7 +278,16 @@ class MyGallery extends Component {
 			}
 		})
 	}
-    //COMPONENT DID MOUNT END
+	//COMPONENT DID MOUNT END
+	
+
+	//COMPONENT WILL UNMOUNT START
+	componentWillUnmount() {
+		if (this.dbUserImages) {
+			this.dbUserImages.off();
+		}
+	}
+	//COMPONENT WILL UNMOUNT END
 }
 
 export default MyGallery;

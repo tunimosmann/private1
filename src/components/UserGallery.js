@@ -70,7 +70,7 @@ class UserGallery extends Component {
                                 </div>
                             )
                             : (
-                                this.state.activeGallery.map((image) => {
+                                this.state.activeGallery.map((image, i) => {
 
                                     const imageName = image[1].name.split(".")[0];
 
@@ -78,19 +78,19 @@ class UserGallery extends Component {
 
                                     return (
 
-                                        <div className="userGallery__item">
+                                        <div className="userGallery__item" key={i}>
                                             <div className="userGallery__imageContainer">
                                                 <img src={image[1].url} alt={imageName} className="userGallery__image" />
                                             </div>
 
                                             <h3 className="userGallery__title">{imageName}</h3>
 
-                                            <button className="userGallery__button" onClick={this.props.copyLink} id={nameTurnedPath}>Generate Link</button>
+                                            <button className="userGallery__button" onClick={this.props.generateLink} id={nameTurnedPath}>Generate Link</button>
 
                                             {
                                                 this.props.generatedLink.split("/").reverse()[0] === nameTurnedPath
                                                     ? (
-                                                        <a className="userGallery__text">{this.props.generatedLink}</a>
+                                                        <p className="userGallery__text">{this.props.generatedLink}</p>
                                                     )
                                                     : (
                                                         <div className="empty"></div>
@@ -137,6 +137,14 @@ class UserGallery extends Component {
         })
     }
     //COMPONENT DID MOUNT END
+
+    //COMPONENT WILL UNMOUNT START
+    componentWillUnmount() {
+        if (this.activeGallery) {
+            this.activeGallery.off();
+        }
+    }
+	//COMPONENT WILL UNMOUNT END
 }
 
 export default UserGallery;
