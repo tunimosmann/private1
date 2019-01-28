@@ -13,7 +13,8 @@
   color: white;
 }
 
-.userGallery {
+.userGallery,
+.home {
   background: grey;
 }
 

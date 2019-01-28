@@ -62,7 +62,7 @@ class UserGallery extends Component {
                     {
                         this.props.user
                         ? (
-                            <a href={`http://localhost:3000/${this.props.userName}`} className="userGallery__link">Back to Your Gallery</a>
+                            <a href={`https://tread-a683d.firebaseapp.com/${this.props.userName}`} className="userGallery__link">Back to Your Gallery</a>
                         )
                         : (
                             <div className="empty"></div>  

@@ -211,7 +211,7 @@ class MyGallery extends Component {
 
 					<p className="userGallery__text">You can share your gallery by using this link:</p>
 
-					<a href={`http://localhost:3000/${this.props.userName}`} className="userGallery__link">{`https://tread-a683d.firebaseio.com/${this.props.userName}`}</a>
+					<a href={`https://tread-a683d.firebaseapp.com/${this.props.userName}`} className="userGallery__link">{`https://tread-a683d.firebaseapp.com/${this.props.userName}`}</a>
 
 					<div className="userGallery__items">
 						{

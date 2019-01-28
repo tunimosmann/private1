@@ -78,14 +78,15 @@ class App extends Component {
 					<main className="main">
 						<section className="home">
 							{
-								this.state.user === null && window.location.href === "http://localhost:3000/" 
+								this.state.user === null 
+								
 								? (
-									<div className="home__wrapper">
+									<div className="home__wrapper wrapper">
 										<h2 className="home__h2 heading__h2">Hello!</h2>
 
 										<p className="home__text">Please login if you want to save images to your gallery.</p>
 
-										<p className="home__text">You can check other people's galleries by visiting https://tread-a683d.firebaseio.com/username</p>
+										<p className="home__text">You can check other people's galleries by visiting https://tread-a683d.firebaseapp.com/username</p>
 									</div>
 								)
 								: (
