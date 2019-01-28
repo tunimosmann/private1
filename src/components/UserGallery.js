@@ -57,7 +57,7 @@ class UserGallery extends Component {
     //RENDER START
     render() {
         return (
-            <div className="userGallery__wrapper">
+            <div className="userGallery__wrapper wrapper">
                 <div className="userGallery__gallery">
                     {
                         this.props.user

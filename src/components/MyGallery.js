@@ -167,7 +167,7 @@ class MyGallery extends Component {
 	//RENDER START
     render() {
         return (
-            <div className="userGallery__wrapper">
+            <div className="userGallery__wrapper wrapper">
 				<div className="userGallery__panel">
 					<h2 className="userGallery__h2 heading__h2">Hello {this.props.greetingName}</h2>
 
