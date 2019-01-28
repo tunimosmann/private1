@@ -72,16 +72,30 @@ class UserGallery extends Component {
                             : (
                                 this.state.activeGallery.map((image) => {
 
+                                    const imageName = image[1].name.split(".")[0];
+
+                                    const nameTurnedPath = image[1].name.split(".")[0].split(" ").join("").toLowerCase()
+
                                     return (
 
                                         <div className="userGallery__item">
                                             <div className="userGallery__imageContainer">
-                                                <img src={image[1].url} alt={image[1].name.split(".")[0]} className="userGallery__image" />
+                                                <img src={image[1].url} alt={imageName} className="userGallery__image" />
                                             </div>
 
-                                            <h3 className="userGallery__title">{image[1].name.split(".")[0]}</h3>
+                                            <h3 className="userGallery__title">{imageName}</h3>
 
-                                            <button className="userGallery__button" onClick={this.props.copyLink} id={image[1].name.split(".")[0].split(" ").join("").toLowerCase()}>Generate Link</button>
+                                            <button className="userGallery__button" onClick={this.props.copyLink} id={nameTurnedPath}>Generate Link</button>
+
+                                            {
+                                                this.props.generatedLink.split("/").reverse()[0] === nameTurnedPath
+                                                    ? (
+                                                        <a className="userGallery__text">{this.props.generatedLink}</a>
+                                                    )
+                                                    : (
+                                                        <div className="empty"></div>
+                                                    )
+                                            }
 
                                             {
                                                 this.props.user
