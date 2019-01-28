@@ -81,6 +81,8 @@ class UserGallery extends Component {
 
                                             <h3 className="userGallery__title">{image[1].name.split(".")[0]}</h3>
 
+                                            <button className="userGallery__button" onClick={this.props.copyLink} id={image[1].name.split(".")[0].split(" ").join("").toLowerCase()}>Generate Link</button>
+
                                             {
                                                 this.props.user
                                                 ? (
@@ -89,7 +91,7 @@ class UserGallery extends Component {
                                                 : (
                                                     <div className="empty"></div>
                                                 )
-                                            }
+                                            }   
                                         </div>
                                     )
                                 })

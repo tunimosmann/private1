@@ -223,6 +223,8 @@ class MyGallery extends Component {
 
 										<h3 className="userGallery__title">{image[1].name.split(".")[0]}</h3>
 
+										<button className="userGallery__button" onClick={this.props.copyLink} id={image[1].name.split(".")[0].split(" ").join("").toLowerCase()}>Generate Link</button>
+
 										<button className="userGallery__button" onClick={this.deleteImage} id={image[0]}>Delete Image</button>
 									</div>
 								)

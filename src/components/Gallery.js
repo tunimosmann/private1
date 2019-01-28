@@ -23,7 +23,15 @@ class Gallery extends Component {
             dbUserImages: []
         }
     }
-	//CONSTRUCTOR END
+    //CONSTRUCTOR END
+    
+    //FUNCTIONS START
+    copyLink = (event) => {
+        event.preventDefault();
+
+        console.log(event.target.id);
+    }
+    //FUNCTIONS END
 
     //RENDER START
     render () {
@@ -35,6 +43,7 @@ class Gallery extends Component {
                         <MyGallery 
                         userName={this.state.userName}
                         greetingName={this.state.greetingName}
+                        copyLink={this.copyLink}
                         />
                     ) 
                     : (
@@ -43,6 +52,7 @@ class Gallery extends Component {
                         userName={this.state.userName}
                         dbUserImages={this.state.dbUserImages}
                         activePage={activePage}
+                        copyLink={this.copyLink}
                         />
                     )
                 }

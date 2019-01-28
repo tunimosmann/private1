@@ -116,21 +116,7 @@ class App extends Component {
 
 					this.setState({
 						userName: userName
-					})
-
-					// if (user.displayName) {
-					// 	const userName = user.displayName.toLowerCase().split(" ").join("");
-
-					// 	this.setState({
-					// 		userName: userName
-					// 	})
-					// } else {
-					// 	const emailUser = user.email.toLowerCase().split("@")[0];
-
-					// 	this.setState({
-					// 		userName: emailUser
-					// 	})
-					// }	
+					})	
 				})	
 			} else {
 				this.setState({
@@ -142,14 +128,11 @@ class App extends Component {
   //COMPONENT DID MOUNT END
 
   //COMPONENT WILL UNMOUNT START
-//   componentWillUnmount() {
-// 		if (this.dbUser) {
-// 			this.dbUser.off();
-// 		}
-// 		if (this.dbUserImages) {
-// 			this.dbUserImages.off();
-// 		}
-// 	}
+  componentWillUnmount() {
+		if (this.dbUserImages) {
+			this.dbUserImages.off();
+		}
+	}
 }
 
 export default App;
